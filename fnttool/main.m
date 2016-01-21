@@ -185,7 +185,7 @@ void makeFnt(NSString* folder, NSString* extension, NSString* desName, NSString*
     
     t += h;
     
-    [_strFnt appendFormat:@"info face=\"Arial\" size=20 bold=0 italic=0 charset=\"\" unicode=0 stretchH=100 smooth=1 aa=1 padding=0,0,0,0 spacing=2,2\n"];
+    [_strFnt appendFormat:@"info face=\"Arial\" size=%zu bold=0 italic=0 charset=\"\" unicode=0 stretchH=100 smooth=1 aa=1 padding=0,0,0,0 spacing=2,2\n", h];
     [_strFnt appendFormat:@"common lineHeight=%lu base=20 scaleW=%d scaleH=%d pages=1 packed=0\n", h + 20, (int)desw, (int)t];
     [_strFnt appendFormat:@"page id=0 file=\"%@\"\n", [_desPngPath lastPathComponent]];
     [_strFnt appendFormat:@"chars count=%lu\n", (unsigned long)imgs.count];
@@ -209,8 +209,14 @@ void makeFnt(NSString* folder, NSString* extension, NSString* desName, NSString*
     l = 0;
     t = 0;
     
-    for (int i = 0; i < imgs.allKeys.count; i++) {
-        NSString* key = imgs.allKeys[i];
+    NSMutableArray* key_tmp = [NSMutableArray arrayWithArray:imgs.allKeys];
+    
+    [key_tmp sortUsingComparator:^NSComparisonResult(id  _Nonnull obj1, id  _Nonnull obj2) {
+        return [obj1 compare:obj2 options:NSNumericSearch];
+    }];
+    
+    for (int i = 0; i < key_tmp.count; i++) {
+        NSString* key = key_tmp[i];
         CGImageRef img = (__bridge CGImageRef)(imgs[key]);
         
         size_t w = CGImageGetWidth(img);
@@ -263,11 +269,11 @@ int main(int argc, const char * argv[]) {
         if (!keys.count || keys.count != values.count) {
             printf("\n***** fnttool *****\n");
             printf("\t参数:\n");
-            printf("\t-i key\t\t\t搜索 key 对应的文档描述\n");
-            printf("\t-f folder_path\t\t\t使用文件夹内的文件\n");
-            printf("\t-e extension\t\t\t文件夹内仅搜索这类扩展名\n");
-            printf("\t-d filename\t\t\t创建的fnt文件名\n");
-            printf("\t-w max_width\t\t\t创建的fnt图片文件最大宽度，默认1024\n");
+            printf("\t-i key\t\t\tSearch document by keyword 搜索 key 对应的文档描述\n");
+            printf("\t-f folder_path\t\tUsing files in folder 使用文件夹内的文件\n");
+            printf("\t-e extension\t\tOnly use files with specified extension 文件夹内仅搜索这类扩展名\n");
+            printf("\t-d filename\t\tDestination file name 指定创建的fnt文件名\n");
+            printf("\t-w max_width\t\tSet the fnt png image's max width 创建的fnt图片文件最大宽度，默认1024\n");
             
             return -1;
         }
