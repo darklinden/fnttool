@@ -165,12 +165,16 @@ void makeFnt(NSString* folder, NSString* extension, NSString* desName, NSString*
     float t = 0;
     float desw = 0;
     
-    NSString* key = imgs.allKeys.firstObject;
-    CGImageRef img = (__bridge CGImageRef)(imgs[key]);
-    size_t w = CGImageGetWidth(img);
-    size_t h = CGImageGetHeight(img);
+    size_t w = 0;
+    size_t h = 0;
+    for (NSString* key in imgs.allKeys) {
+        CGImageRef img = (__bridge CGImageRef)(imgs[key]);
+        if (w < CGImageGetWidth(img)) w = CGImageGetWidth(img);
+        if (h < CGImageGetHeight(img)) h = CGImageGetHeight(img);
+    }
     
     for (int i = 0; i < imgs.count; i++) {
+        
         if (l + w < maxw) {
             l += w;
             if (l > desw) {
@@ -186,7 +190,7 @@ void makeFnt(NSString* folder, NSString* extension, NSString* desName, NSString*
     t += h;
     
     [_strFnt appendFormat:@"info face=\"Arial\" size=%zu bold=0 italic=0 charset=\"\" unicode=0 stretchH=100 smooth=1 aa=1 padding=0,0,0,0 spacing=2,2\n", h];
-    [_strFnt appendFormat:@"common lineHeight=%lu base=20 scaleW=%d scaleH=%d pages=1 packed=0\n", h + 20, (int)desw, (int)t];
+    [_strFnt appendFormat:@"common lineHeight=%lu base=20 scaleW=%d scaleH=%d pages=1 packed=0\n", h, (int)desw, (int)t];
     [_strFnt appendFormat:@"page id=0 file=\"%@\"\n", [_desPngPath lastPathComponent]];
     [_strFnt appendFormat:@"chars count=%lu\n", (unsigned long)imgs.count];
     
