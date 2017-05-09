@@ -229,7 +229,10 @@ void makeFnt(NSString* folder, NSString* extension, NSString* desName, NSString*
         CGRect destTile = CGRectMake(l, t, w, h);
         CGContextDrawImage(context, destTile, img);
         
-        [_strFnt appendFormat:@"char id=%d x=%d y=%d width=%zu height=%zu xoffset=0 yoffset=0 xadvance=%zu page=0 chnl=0 letter=\"%@\"\n", (int)key.UTF8String[0], (int)l, (int)t, w, h, w, key];
+        unichar uc;
+        [key getBytes:&uc maxLength:2 usedLength:NULL encoding:NSUTF16LittleEndianStringEncoding options:0 range:NSMakeRange(0, 1) remainingRange:NULL];
+        
+        [_strFnt appendFormat:@"char id=%d x=%d y=%d width=%zu height=%zu xoffset=0 yoffset=0 xadvance=%zu page=0 chnl=0 letter=\"%@\"\n", (int)uc, (int)l, (int)t, w, h, w, key];
         
         if (l + w < maxw) {
             l += w;
