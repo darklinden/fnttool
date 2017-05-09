@@ -148,7 +148,7 @@ def get_img(path):
 
     return newImg
     
-def makeFnt(imgList, cellW, cellH, width, height, desPath):
+def makeFnt(imgList, cellW, cellH, width, height, desPath, lineCnt):
     strFnt = "info face=\"Arial\" size=" + str(cellH) + " bold=0 italic=0 charset=\"\" unicode=0 stretchH=100 smooth=1 aa=1 padding=0,0,0,0 spacing=2,2\n"
     strFnt += "common lineHeight=" + str(cellH) + " base=20 scaleW=" + str(width) + " scaleH=" + str(height) + " pages=1 packed=0\n"
     pre, fn = os.path.split(desPath)
@@ -178,11 +178,11 @@ def makeFnt(imgList, cellW, cellH, width, height, desPath):
 
         strFnt += "char id=" + str(charCode) + " x=" + str(x) + " y=" + str(top) + " width=" + str(w) + " height=" + str(cellH) + " xoffset=0 yoffset=0 xadvance=" + str(w) + " page=0 chnl=0 letter=\"" + key + "\"\n"
 
-        if (left + cellW + cellW < width):
-            left += cellW
-        else:
+        if i != 0 and i % lineCnt == 0:
             left = 0
             top += cellH
+        else:
+            left += cellW
 
     desImg.save(desPath + ".png")
 
@@ -289,7 +289,7 @@ def main():
     if _des == "":
         _des = _folder
 
-    makeFnt(imgList, cellW, cellH, pageWidth, pageHeight, _des)
+    makeFnt(imgList, cellW, cellH, pageWidth, pageHeight, _des, lineCnt)
     
 
 if __name__ == "__main__":
