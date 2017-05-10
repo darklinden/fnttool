@@ -162,6 +162,7 @@ def makeFnt(imgList, cellW, cellH, width, height, desPath, lineCnt):
 
     left = 0
     top = 0
+    lineNo = 0
     for i in xrange(0, len(keyList)):
         key = keyList[i]
         img = imgList[key]
@@ -178,11 +179,13 @@ def makeFnt(imgList, cellW, cellH, width, height, desPath, lineCnt):
 
         strFnt += "char id=" + str(charCode) + " x=" + str(x) + " y=" + str(top) + " width=" + str(w) + " height=" + str(cellH) + " xoffset=0 yoffset=0 xadvance=" + str(w) + " page=0 chnl=0 letter=\"" + key + "\"\n"
 
-        if i != 0 and i % lineCnt == 0:
+        lineNo += 1
+        if lineNo < lineCnt:
+            left += cellW
+        else:
+            lineNo = 0
             left = 0
             top += cellH
-        else:
-            left += cellW
 
     desImg.save(desPath + ".png")
 
