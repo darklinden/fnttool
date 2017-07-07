@@ -103,9 +103,8 @@ def get_img(path):
     y = img.size[1]
     rgb_img = img.convert('RGBA')
 
-    xSetFlag = True
-    xLeft = 0
-    xRight = x
+    xLeft = x
+    xRight = 0
     for x0 in range(0, x):
         yIsTranparent = True
         for y0 in range(0, y):
@@ -113,17 +112,19 @@ def get_img(path):
             if pix[3] != 0:
                 yIsTranparent = False
                 break
-        if x0 > xLeft and yIsTranparent and xSetFlag:
-            xLeft = x0
-        if not xSetFlag and yIsTranparent and x0 < xRight:
-            xRight = x0
-            break
         if not yIsTranparent:
-            xSetFlag = False
+            if x0 < xLeft:
+                xLeft = x0 - 1
+            if x0 > xRight:
+                xRight = x0 + 1
 
-    ySetFlag = True
-    yTop = y
-    yBottom = 0
+    if xLeft < 0:
+        xLeft = 0
+    if xRight > x:
+        xRight = x
+
+    yTop = 0
+    yBottom = y
     for y0 in range(0, y):
         xIsTranparent = True
         for x0 in range(0, x):
@@ -131,13 +132,16 @@ def get_img(path):
             if pix[3] != 0:
                 xIsTranparent = False
                 break
-        if y0 > yBottom and xIsTranparent and ySetFlag:
-            yBottom = y0
-        if not ySetFlag and xIsTranparent and y0 < yTop:
-            yTop = y0
-            break
         if not xIsTranparent:
-            ySetFlag = False
+            if y0 < yBottom:
+                yBottom = y0 - 1
+            if y0 > yTop:
+                yTop = y0 + 1
+
+    if yBottom < 0:
+        yBottom = 0
+    if yTop > y:
+        yTop = y
 
     trueW = xRight - xLeft
     trueH = yTop - yBottom
@@ -251,6 +255,8 @@ def main():
         for fn in sub_files:
             file_path = os.path.join(_folder, fn)
             if os.path.isfile(file_path):
+                if fn == ".DS_Store":
+                    continue
                 if (_ext == "") or (fn.lower().endswith(_ext)):
                     name = fn[:fn.rfind(".")]
                     img = get_img(file_path)
