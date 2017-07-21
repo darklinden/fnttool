@@ -152,17 +152,19 @@ def get_img(path):
 
     return newImg
     
-def makeFnt(imgList, cellW, cellH, width, height, desPath, lineCnt):
+def makeFnt(imgList, cellW, char_width_offset, cellH, width, height, desPath, lineCnt):
     strFnt = "info face=\"Arial\" size=" + str(cellH) + " bold=0 italic=0 charset=\"\" unicode=0 stretchH=100 smooth=1 aa=1 padding=0,0,0,0 spacing=2,2\n"
     strFnt += "common lineHeight=" + str(cellH) + " base=20 scaleW=" + str(width) + " scaleH=" + str(height) + " pages=1 packed=0\n"
     pre, fn = os.path.split(desPath)
     strFnt += "page id=0 file=\"" + fn + ".png\"\n"
-    strFnt += "chars count=" + str(len(imgList)) + "\n"
+    strFnt += "chars count=" + str(len(imgList) + 1) + "\n"
 
     keyList = imgList.keys()
     keyList.sort()
 
     desImg = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+
+    strFnt += "char id=32 x=0 y=0 width=0 height=0 xoffset=0 yoffset=0 xadvance=" + str(cellW + char_width_offset) + " page=0 chnl=0 letter=\"space\"\n"
 
     left = 0
     top = 0
@@ -181,7 +183,9 @@ def makeFnt(imgList, cellW, cellH, width, height, desPath, lineCnt):
 
         desImg.paste(img, (x, y, x + w, y + h))
 
-        strFnt += "char id=" + str(charCode) + " x=" + str(x) + " y=" + str(top) + " width=" + str(w) + " height=" + str(cellH) + " xoffset=0 yoffset=0 xadvance=" + str(w) + " page=0 chnl=0 letter=\"" + key + "\"\n"
+        strFnt += "char id=" + str(charCode) + " x=" + str(x) + " y=" + str(top) + " width=" + str(w) + " height=" + \
+                  str(cellH) + " xoffset=0 yoffset=0 xadvance=" + str(w + char_width_offset) + \
+                  " page=0 chnl=0 letter=\"" + key + "\"\n"
 
         lineNo += 1
         if lineNo < lineCnt:
@@ -208,6 +212,7 @@ def main():
     _ext = ""
     _des = ""
     _width = 1024
+    _char_width_offset = 0
 
     idx = 1
     while idx < len(sys.argv):
@@ -229,6 +234,8 @@ def main():
                     _des = _des[:len(_des) - 4]
             elif cmd == "w":
                 _width = v
+            elif cmd == "cw":
+                _char_width_offset = int(str(v))
             idx += 2
         else:
             idx += 1
@@ -240,6 +247,7 @@ def main():
         print("\t-e extension\t\tOnly use files with specified extension 文件夹内仅搜索这类扩展名")
         print("\t-d filename\t\tDestination file name 指定创建的fnt文件名")
         print("\t-w max_width\t\tSet the fnt png image's max width 创建的fnt图片文件最大宽度，默认1024")
+        print("\t-cw char_width_offset\t\tSet the fnt png image's char width offset 创建的fnt图片单字间距，默认0")
 
         return
 
@@ -275,6 +283,7 @@ def main():
         print("\t-e extension\t\tOnly use files with specified extension 文件夹内仅搜索这类扩展名")
         print("\t-d filename\t\tDestination file name 指定创建的fnt文件名")
         print("\t-w max_width\t\tSet the fnt png image's max width 创建的fnt图片文件最大宽度，默认1024")
+        print("\t-cw char_width_offset\t\tSet the fnt png image's char width offset 创建的fnt图片单字间距，默认0")
 
         return
 
@@ -298,7 +307,7 @@ def main():
     if _des == "":
         _des = _folder
 
-    makeFnt(imgList, cellW, cellH, pageWidth, pageHeight, _des, lineCnt)
+    makeFnt(imgList, cellW, _char_width_offset, cellH, pageWidth, pageHeight, _des, lineCnt)
     
 
 if __name__ == "__main__":
