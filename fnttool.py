@@ -103,12 +103,15 @@ def mkdir_p(path):
             raise
 
 
-def get_img(path):
+def get_img(path, alpha_control):
     try:
         img = Image.open(path)
     except:
         print ("get_act_img: file [" + path + "] is not valid image, skipped.")
         return None
+
+    if alpha_control == 0:
+        return img
 
     x = img.size[0]
     y = img.size[1]
@@ -228,6 +231,7 @@ def main():
     _des = ""
     _width = 1024
     _char_width_offset = 0
+    _alpha_control = 0
 
     idx = 1
     while idx < len(sys.argv):
@@ -249,6 +253,8 @@ def main():
                     _des = _des[:len(_des) - 4]
             elif cmd == "w":
                 _width = v
+            elif cmd == "a":
+                _alpha_control = int(str(v))
             elif cmd == "cw":
                 _char_width_offset = int(str(v))
             idx += 2
@@ -260,6 +266,7 @@ def main():
         print("\t参数:")
         print("\t-f folder_path\t\tUsing files in folder 使用文件夹内的文件")
         print("\t-e extension\t\tOnly use files with specified extension 文件夹内仅搜索这类扩展名")
+        print("\t-a 0: 使用图片大小 [default] 1: 使用alpha中心大小")
         print("\t-d filename\t\tDestination file name 指定创建的fnt文件名")
         print("\t-w max_width\t\tSet the fnt png image's max width 创建的fnt图片文件最大宽度，默认1024")
         print("\t-cw char_width_offset\t\tSet the fnt png image's char width offset 创建的fnt图片单字间距，默认0")
@@ -282,7 +289,7 @@ def main():
                     continue
                 if (_ext == "") or (fn.lower().endswith(_ext)):
                     name = fn[:fn.rfind(".")]
-                    img = get_img(file_path)
+                    img = get_img(file_path, _alpha_control)
                     if img is not None:
                         img_list[name] = img
 
@@ -296,6 +303,7 @@ def main():
         print("\t参数:")
         print("\t-f folder_path\t\tUsing files in folder 使用文件夹内的文件")
         print("\t-e extension\t\tOnly use files with specified extension 文件夹内仅搜索这类扩展名")
+        print("\t-a 0: 使用图片大小 [default] 1: 使用alpha中心大小")
         print("\t-d filename\t\tDestination file name 指定创建的fnt文件名")
         print("\t-w max_width\t\tSet the fnt png image's max width 创建的fnt图片文件最大宽度，默认1024")
         print("\t-cw char_width_offset\t\tSet the fnt png image's char width offset 创建的fnt图片单字间距，默认0")
