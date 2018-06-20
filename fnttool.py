@@ -220,6 +220,17 @@ def make_fnt(img_list, cell_w, char_width_offset, cell_h, width, height, des_pat
     f.close()
 
 
+def print_help():
+    print("\n***** fnttool *****")
+    print("\t参数:")
+    print("\t-f folder_path\t\tUsing files in folder 使用文件夹内的文件")
+    print("\t-e extension\t\tOnly use files with specified extension 文件夹内仅搜索这类扩展名")
+    print("\t-a 0: 使用图片大小\t[default] 1: 使用alpha中心大小")
+    print("\t-d filename\t\t\tDestination file name 指定创建的fnt文件名")
+    print("\t-w max_width\t\tSet the fnt png image's max width 创建的fnt图片文件最大宽度，默认1024")
+    print("\t-cw char_width_offset\tSet the fnt png image's char width offset 创建的fnt图片单字间距，默认0")
+
+
 def main():
     # self_install
     if len(sys.argv) > 1 and sys.argv[1] == 'install':
@@ -262,15 +273,7 @@ def main():
             idx += 1
 
     if _folder == "":
-        print("\n***** fnttool *****")
-        print("\t参数:")
-        print("\t-f folder_path\t\tUsing files in folder 使用文件夹内的文件")
-        print("\t-e extension\t\tOnly use files with specified extension 文件夹内仅搜索这类扩展名")
-        print("\t-a 0: 使用图片大小 [default] 1: 使用alpha中心大小")
-        print("\t-d filename\t\tDestination file name 指定创建的fnt文件名")
-        print("\t-w max_width\t\tSet the fnt png image's max width 创建的fnt图片文件最大宽度，默认1024")
-        print("\t-cw char_width_offset\t\tSet the fnt png image's char width offset 创建的fnt图片单字间距，默认0")
-
+        print_help()
         return
 
     img_list = {}
@@ -289,6 +292,8 @@ def main():
                     continue
                 if (_ext == "") or (fn.lower().endswith(_ext)):
                     name = fn[:fn.rfind(".")]
+                    if os.name == 'nt':
+                        name = name.decode('gbk').encode("utf8")
                     img = get_img(file_path, _alpha_control)
                     if img is not None:
                         img_list[name] = img
@@ -299,15 +304,7 @@ def main():
                             cell_h = img.size[1]
 
     if len(img_list) <= 0:
-        print("\n***** fnttool *****")
-        print("\t参数:")
-        print("\t-f folder_path\t\tUsing files in folder 使用文件夹内的文件")
-        print("\t-e extension\t\tOnly use files with specified extension 文件夹内仅搜索这类扩展名")
-        print("\t-a 0: 使用图片大小 [default] 1: 使用alpha中心大小")
-        print("\t-d filename\t\tDestination file name 指定创建的fnt文件名")
-        print("\t-w max_width\t\tSet the fnt png image's max width 创建的fnt图片文件最大宽度，默认1024")
-        print("\t-cw char_width_offset\t\tSet the fnt png image's char width offset 创建的fnt图片单字间距，默认0")
-
+        print_help()
         return
 
     line_cnt = (_width - (_width % cell_w)) / cell_w
