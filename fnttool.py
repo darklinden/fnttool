@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import os
@@ -107,7 +107,7 @@ def get_img(path, alpha_control):
     try:
         img = Image.open(path)
     except:
-        print ("get_act_img: file [" + path + "] is not valid image, skipped.")
+        print("get_act_img: file [" + path + "] is not valid image, skipped.")
         return None
 
     if alpha_control == 0:
@@ -177,7 +177,7 @@ def make_fnt(img_list, cell_w, char_width_offset, cell_h, width, height, des_pat
     str_fnt += "chars count=" + str(len(img_list) + 1) + "\n"
 
     key_list = img_list.keys()
-    key_list.sort()
+    key_list = sorted(key_list)
 
     des_img = Image.new("RGBA", (width, height), (0, 0, 0, 0))
 
@@ -187,14 +187,14 @@ def make_fnt(img_list, cell_w, char_width_offset, cell_h, width, height, des_pat
     left = 0
     top = 0
     line_no = 0
-    for i in xrange(0, len(key_list)):
+    for i in range(0, len(key_list)):
         key = key_list[i]
         img = img_list[key]
 
         w = img.size[0]
         h = img.size[1]
 
-        char_code = ord(str(key).decode("utf8"))
+        char_code = ord(str(key).encode().decode("utf8"))
 
         x = int(left + ((cell_w - w) / 2))
         y = int(top + ((cell_h - h) / 2))
@@ -216,7 +216,7 @@ def make_fnt(img_list, cell_w, char_width_offset, cell_h, width, height, des_pat
     des_img.save(des_path + ".png")
 
     f = open(des_path + ".fnt", "wb")
-    f.write(str_fnt)
+    f.write(str_fnt.encode())
     f.close()
 
 
@@ -324,7 +324,8 @@ def main():
     if _des == "":
         _des = _folder
 
-    make_fnt(img_list, cell_w, _char_width_offset, cell_h, page_width, page_height, _des, line_cnt)
+    make_fnt(img_list, cell_w, _char_width_offset, cell_h,
+             page_width, page_height, _des, line_cnt)
 
 
 if __name__ == "__main__":
